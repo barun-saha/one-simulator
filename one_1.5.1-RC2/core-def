@@ -1,0 +1,11 @@
+# some possible core definitions: floating content items will only be posted within those bounds
+#
+# x_base=1100
+# y_base=400
+# max_x=2700
+# max_y=2000
+#
+max_x=2700
+max_y=2800
+x_base=900
+y_base=1000

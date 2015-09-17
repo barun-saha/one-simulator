@@ -1,0 +1,95 @@
+# This configuration file is for use with the FloatingContent evaluation application to evaluate floating performance only.
+# It is not suitable for building applications on top.  floating_app_base.txt instead.
+
+## Floating application basics
+floatingApp.seed = [0; 1; 2; 3; 4; 5; 6; 7; 8; 9 ]
+
+## Define new application
+floatingApp.type = FloatingApplication
+
+## Generation of floating messages
+# message creation start time
+# The start time and the interval together define when the first messages
+# are created: The first message is generated at a random instant uniformly distributed in [start + 0.75*interval ; start + 1.25 * interval]
+floatingApp.start = 0
+
+# message creation interval
+# After a message was created at t0, the creation time for the next one will be uniformaly chosen from [t0 + 0.75*interval ; t0 + 1.25 * interval]
+floatingApp.interval = 1800
+
+# floating message TTL (in secconds!)
+# Important note: for the FloatingMessageReport to work, the variable Group.msgTtl (expressed in minutes!)
+# 	    	  MUST be larger than the floatingApp.ttl -- otherwise, message deletions will not be reported properly
+# Syntax:
+# ttl = t1	  t1 is the ttl in seconds
+# ttl = t1,t2	  the ttl will be chosen uniformly distributed between t1 and t2 with a granularity of 1.0s
+# ttl = t1,t2,t3  the ttl will be chosen uniformly distributed between t1 and t2 with a granularity of t3 seconds
+# floatingApp.ttl = 1800
+# floatingApp.ttl = 1800,3600
+floatingApp.ttl = 1800,3600,300
+
+# The unreachable virtual node forms the destination
+floatingApp.destination = 0
+
+# Message size
+# Syntax:
+# messageSize = s1	  s1 is the size in bytes
+# messageSize = s1,s2	  the size will be chosen uniformly distributed between s1 and s2 with a granularity of 1 byte
+# messageSize = s1,s2,s3  the size will be chosen uniformly distributed between s1 and s2 with a granularity of s3 bytes
+# floatingApp.messageSize = 5k
+# floatingApp.messageSize = 5k,100k
+floatingApp.messageSize = 100k,1000k,100k
+
+# When shall the first message be generated?
+floatingApp.startTime = 0
+
+# mode: { fixed, variable }
+# 1) "fixed" mode uses one chosen anchor point defined by anchor, inAnchorZoneFactor, and r (see below).
+#    A node that comes closer than inAnchorZoneFactor * r to the anchor point and is eligible for generating
+#    the next message as per interval (above) will generate a new floating message.
+# 2) "variable" mode means that nodes create messages at their respective location every interval seconds
+#    as long as they are within the confines of the anchor area defined by the anchor variable.
+floatingApp.mode = variable
+
+## Anchor zone spefications
+# Three variables are used to define the "fixed" anchor zone or the confines of the anchor area ("variable")
+# anchor = x,y,r,a
+# anchorMax = xmax,ymax,rmax,amax
+# anchorGranularity = xg,yg,rg,ag
+#
+# 1) For "fixed" modes, only "anchor" is used and specifies the _single_ anchor zone for the simulation
+# 2) For "variable" mode, anchor specifies the lower bound and anchorMax the upper bound for x,y,r,a
+#    (x,y) and (xmax,ymax) then define the area within which floating messages may be created.
+#    [r,rmax] and [a,amax] defines the intervals from which the replication and availability ranges
+#    are drawn (uniformly distributed)
+#    xg and yg define the stepsize (granularity) at which content may be floated (like a grid).  The
+#    floating message will 'snap' to the closest grid point.
+#    Similarly, rg and ag, define the granularity at which the respective ranges are chosen (e.g.,
+#    in steps of 100m)
+# If no anchorGran is specified (or 0), a granularity of 1.0 is assumed for all four variables
+
+# Region to which message creations will be limited: 
+floatingApp.anchor = 0,0,500,750
+floatingApp.anchorMax = 4500,3400,500,750
+floatingApp.anchorGranularity = 100,100,0,0
+
+## only used for a static anchor point
+# floatingApp.anchor = 1800,1900,500,750
+# floatingApp.inAnchorZoneFactor = 0.5
+
+# Set floating app for all nodes
+Group.nrofApplications = 1
+Group.application1 = floatingApp
+
+# Finally, the floating application support a flag "flux" that switches to an entirely different 
+# opeation.  "flux = true" indicates that the flux of nodes out of and into a given (single) anchor
+# zone shall be counted.  This essentially disables all other operation *and* makes the simulation
+# very slow and the result files very large.  
+#
+# In flux mode, every host checks at every time step if it has entered or left the anchor zone
+# and reports an "enter" or "leave" message to the FloatingAppReporter class.  This is the only
+# use for FloatingAppReporter.
+#
+# We have used the flux mode to validate the criticality condition we derived theoretically.
+# For actual message passing simulations, there is no point in using flux.
+# flux = false
