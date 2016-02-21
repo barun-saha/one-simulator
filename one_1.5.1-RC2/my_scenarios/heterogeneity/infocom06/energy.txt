@@ -1,0 +1,131 @@
+#
+# Energy considerations with 78 nodes using connection traces from
+# Infocom'06.
+#
+# Group.router: 3
+# Total scenarios = 3
+
+## Scenario settings
+Scenario.name = energy_%%Group.router%%
+#Scenario.name = no-energy_%%Group.router%%
+
+Scenario.simulateConnections = false
+Scenario.updateInterval = 5.0
+
+# 43200s == 12h
+# 14400s == 4hr
+Scenario.endTime = 86400
+Scenario.nrofHostGroups = 1
+Scenario.nrofHosts = 78
+
+
+## Interface-specific settings:
+# type : which interface class the interface belongs to
+# For different types, the sub-parameters are interface-specific
+# For SimpleBroadcastInterface, the parameters are:
+# transmitSpeed : transmit speed of the interface (bytes per second)
+# transmitRange : range of the interface (meters)
+
+# "Bluetooth" interface for all nodes
+btInterface.type = SimpleBroadcastInterface
+# Transmit speed of 2 Mbps = 250kBps
+btInterface.transmitSpeed = 250k
+btInterface.transmitRange = 10
+
+
+## Group-specific settings:
+
+Group.groupID = n
+Group.nrofHosts = 78
+
+# Common settings for all groups
+Group.movementModel = StationaryMovement
+Group.nodeLocation = 10, 10
+
+Group.bufferSize = 200M
+
+
+# All nodes have the bluetooth interface
+Group.nrofInterfaces = 1
+Group.interface1 = btInterface
+# Walking speeds
+Group.speed = 0.5, 3
+# Message TTL of 300 minutes (5 hours)
+Group.msgTtl = 3000
+
+Group.router = [CompatibleSnWRouter; CompatibleProphetRouter; EpidemicRouter]
+#Group.router = [SprayAndWaitRouter; ProphetRouter]
+
+SprayAndWaitRouter.nrofCopies = 16
+SprayAndWaitRouter.binaryMode = true
+ProphetRouter.secondsInTimeUnit = 30
+
+
+
+
+
+
+
+## Movement model settings
+# seed for movement models' pseudo random number generator (default = 0)
+MovementModel.rngSeed = 0
+# World's size for Movement Models without implicit size (width, height; meters)
+MovementModel.worldSize = 50, 50
+
+
+# How many event generators
+Events.nrof = 2
+
+## Connection trace information
+Events1.class = ExternalEventsQueue
+Events1.filePath = my_scenarios/heterogeneity/infocom06/infocom-78n-24hr.tr
+
+## Message creation events
+Events2.class = MessageEventGenerator
+Events2.hosts = 0,78
+Events2.prefix = M
+Events2.interval = 30,60
+Events2.size = 50k,1M
+Events2.time = 0,18000
+
+## Motorola Milestone
+# http://www.gsmarena.com/motorola_milestone-3001.php
+# 1400 mAh, say 3.5 V => 1.4 * 3600 * 3.5 = 17640
+# http://android.stackexchange.com/questions/476/what-can-i-do-to-increase-battery-life-on-my-android-device/27742#27742
+# BT receive      |             751 mW
+# BT send         |             487 mW
+# BT Standby      |             2.8 mW 
+Group.initialEnergy = 9000.0,17640.0
+Group.scanEnergy = 2
+Group.scanResponseEnergy = 2
+Group.transmitEnergy = 0.7
+
+## Nokia X6
+# 1320 mAh, 3.7 V => 1.32 Amp * 60 * 60 * 3.7 = 17582.40 J
+
+# Joules
+#Group.initialEnergy = 17582.40
+#Group.initialEnergy = 4.8
+#Group.scanEnergy = 0.00092
+#Group.scanResponseEnergy = 0.00092
+#Group.transmitEnergy = 0.00008
+
+
+## Reports - all report names have to be valid report classes
+# how many reports to load
+Report.nrofReports = 2
+Report.reportDir = my_reports/device-heterogeneity/infocom06/energy/snw-prophet/diff_initial
+# Report classes to load
+Report.report1 = MessageStatsReport
+Report.report2 = MessageDelayReport
+# Can't use with a range of initial energy
+#Report.report3 = EnergyStatsReport
+
+
+# 1 hour
+Report.granularity = 3600
+
+## Optimization settings -- these affect the speed of the simulation
+## see World class for details.
+Optimization.cellSizeMult = 5
+Optimization.randomizeUpdateOrder = true

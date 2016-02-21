@@ -1,0 +1,98 @@
+#
+# Simulate asymmetric connection events with 78 nodes using connection traces 
+# from Infocom'06. Messages are loaded as external events.
+#
+# Scenario.endTime: 5
+# interface1.bidirectionalConnectionFromTrace: 2
+# Group.router: 3
+# Total scenarios: 5 * 2 * 3 = 30
+
+## Scenario settings
+Scenario.name = ptu_asymmetric-%%Scenario.endTime%%s_%%Group.router%%_%%interface1.bidirectionalConnectionFromTrace%%
+Scenario.simulateConnections = false
+Scenario.updateInterval = 5.0
+
+# 43200s == 12h
+# 14400s == 4hr
+Scenario.endTime = [43200; 64800; 86400; 4; 5]
+#Scenario.endTime = 64800
+Scenario.nrofHostGroups = 1
+Scenario.nrofHosts = 78
+
+
+## Interface-specific settings:
+# type : which interface class the interface belongs to
+# For different types, the sub-parameters are interface-specific
+# For SimpleBroadcastInterface, the parameters are:
+# transmitSpeed : transmit speed of the interface (bytes per second)
+# transmitRange : range of the interface (meters)
+
+# Type 1 network interface
+interface1.type = SimpleBroadcastInterfaceTypeCheck1
+# Transmit speed of 2 Mbps = 250kBps
+interface1.transmitSpeed = 125k
+interface1.transmitRange = 10
+interface1.bidirectionalConnectionFromTrace = [true; false]
+
+
+## Group-specific settings:
+
+# Common settings for all groups
+Group.nrofHosts = 78
+Group.movementModel = StationaryMovement
+Group.nodeLocation = 10, 10
+
+#Group.bufferSize = 200M
+
+
+# Walking speeds
+Group.speed = 0.5, 3
+# Message TTL of 300 minutes (5 hours)
+Group.msgTtl = 3000
+Group.groupID = n
+Group.nrofInterfaces = 1
+Group.interface1 = interface1
+Group.router = [CompatibleSnWRouter; CompatibleProphetRouter; PassiveRouter]
+
+SprayAndWaitRouter.nrofCopies = 16
+SprayAndWaitRouter.binaryMode = true
+ProphetRouter.secondsInTimeUnit = 60
+
+
+## Movement model settings
+# seed for movement models' pseudo random number generator (default = 0)
+MovementModel.rngSeed = 0
+# World's size for Movement Models without implicit size (width, height; meters)
+MovementModel.worldSize = 50, 50
+
+
+# How many event generators
+Events.nrof = 2
+
+## Connection trace information
+Events1.class = ExternalEventsQueue
+Events1.filePath = my_scenarios/heterogeneity/infocom06/infocom-78n-24hr.tr
+
+## Message creation events
+Events2.class = MessageEventGenerator
+Events2.hosts = 0,78
+Events2.prefix = M
+Events2.interval = 30,60
+Events2.size = 50k,1M
+Events2.time = 0,18000
+
+
+
+## Reports - all report names have to be valid report classes
+# how many reports to load
+Report.nrofReports = 1
+Report.reportDir = my_reports/device-heterogeneity/infocom06/asymmetric
+# Report classes to load
+Report.report1 = MessageStatsReport
+#Report.report2 = CreatedMessagesReport
+
+
+## Optimization settings -- these affect the speed of the simulation
+## see World class for details.
+Optimization.cellSizeMult = 5
+Optimization.randomizeUpdateOrder = true

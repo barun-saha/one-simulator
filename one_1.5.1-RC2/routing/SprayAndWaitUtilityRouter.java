@@ -1,7 +1,7 @@
 /*
  * Copyright 2015, 2016 Barun Saha (http://barunsaha.me)
  *
- * Distributed under the original license of the ONE simulator.
+ * Distributed under GNU GPLv3 license.
  */
 package routing;
 

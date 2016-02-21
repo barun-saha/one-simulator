@@ -1,0 +1,114 @@
+#
+# Simulating the effects of heterogeneous devices with 78 nodes using 
+# connection traces from Infocom'06.
+# 10, 20, 30% of the nodes have multiple network interfaces.
+#
+# Time: 3
+# Group1 hosts: 1
+# Group2 hosts: 1
+# Group3 hosts: 1
+# Total scenarios: 3
+
+## Scenario settings
+Scenario.name = devices-multi-n-%%Group1.nrofHosts%%-%%Group2.nrofHosts%%-%%Group3.nrofHosts%%_%%Scenario.endTime%%s
+Scenario.simulateConnections = false
+Scenario.updateInterval = 5.0
+
+# 43200s == 12h
+# 14400s == 4hr
+Scenario.endTime = [43200; 64800; 86400]
+Scenario.nrofHostGroups = 3
+Scenario.nrofHosts = 78
+
+
+## Interface-specific settings:
+# type : which interface class the interface belongs to
+# For different types, the sub-parameters are interface-specific
+# For SimpleBroadcastInterface, the parameters are:
+# transmitSpeed : transmit speed of the interface (bytes per second)
+# transmitRange : range of the interface (meters)
+
+# Type 1 network interface
+interface1.type = SimpleBroadcastInterfaceTypeCheck1
+# Transmit speed of 2 Mbps = 250kBps
+interface1.transmitSpeed = 250k
+interface1.transmitRange = 10
+
+# Type 2 network interface
+interface2.type = SimpleBroadcastInterfaceTypeCheck2
+# Transmit speed of 2 Mbps = 250kBps
+interface2.transmitSpeed = 250k
+interface2.transmitRange = 10
+
+
+## Group-specific settings:
+
+# Common settings for all groups
+Group.movementModel = StationaryMovement
+Group.nodeLocation = 10, 10
+
+Group.bufferSize = 200M
+
+
+Group.nrofInterfaces = 1
+# Walking speeds
+Group.speed = 0.5, 3
+# Message TTL of 300 minutes (5 hours)
+Group.msgTtl = 3000
+
+Group.router = CompatibleSnWRouter
+
+SprayAndWaitRouter.nrofCopies = 16
+SprayAndWaitRouter.binaryMode = true
+
+Group.groupID = n
+
+Group1.nrofHosts = 19
+Group2.nrofHosts = 19
+Group3.nrofHosts = 40
+
+Group1.interface1 = interface1
+Group2.interface1 = interface2
+
+Group3.nrofInterfaces = 2
+Group3.interface1 = interface1
+Group3.interface2 = interface2
+
+
+## Movement model settings
+# seed for movement models' pseudo random number generator (default = 0)
+MovementModel.rngSeed = 0
+# World's size for Movement Models without implicit size (width, height; meters)
+MovementModel.worldSize = 50, 50
+
+
+# How many event generators
+Events.nrof = 2
+
+## Connection trace information
+Events1.class = ExternalEventsQueue
+Events1.filePath = my_scenarios/heterogeneity/infocom06/infocom-78n-24hr.tr
+
+## Message creation events
+Events2.class = MessageEventGenerator
+Events2.hosts = 0,78
+Events2.prefix = M
+Events2.interval = 30,60
+Events2.size = 50k,1M
+Events2.time = 0,18000
+
+
+
+## Reports - all report names have to be valid report classes
+# how many reports to load
+Report.nrofReports = 1
+Report.reportDir = my_reports/device-heterogeneity/infocom06/devices-multi
+# Report classes to load
+Report.report1 = MessageStatsReport
+#Report.report2 = CreatedMessagesReport
+
+
+## Optimization settings -- these affect the speed of the simulation
+## see World class for details.
+Optimization.cellSizeMult = 5
+Optimization.randomizeUpdateOrder = true
