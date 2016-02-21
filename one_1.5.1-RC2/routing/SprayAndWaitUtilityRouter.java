@@ -1,9 +1,8 @@
-/**
+/*
  * Copyright 2015, 2016 Barun Saha (http://barunsaha.me)
  *
  * Distributed under the original license of the ONE simulator.
  */
-
 package routing;
 
 import core.Connection;
@@ -20,11 +19,10 @@ import util.Tuple;
 /**
  * An example routing class that combines the traditional Spray-and-Wait routing
  * scheme with a simple utility. This template should be the starting point for
- * implementation of a broad class of routing mechanisms that replicate
- * messages by considering the following two types of information:
- *   1. One or properties of the messages
- *   2. Some additional node-specific utility values
- * 
+ * implementation of a broad class of routing mechanisms that replicate messages
+ * by considering the following two types of information: 1. One or properties
+ * of the messages 2. Some additional node-specific utility values
+ *
  * This example is based on Chapter 3, #TheOMNBook. Refer to this class for
  * solving Exercise 2.12, Chapter 2.
  *
