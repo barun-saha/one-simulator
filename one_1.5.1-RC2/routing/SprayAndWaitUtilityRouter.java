@@ -35,6 +35,7 @@ public class SprayAndWaitUtilityRouter extends SprayAndWaitRouter {
     protected HashMap<Integer, Integer> utilities;
 
     public SprayAndWaitUtilityRouter(Settings s) {
+        // Inherit the settings of SnW
         super(s);
         utilities = new HashMap<Integer, Integer>();
     }
@@ -46,6 +47,7 @@ public class SprayAndWaitUtilityRouter extends SprayAndWaitRouter {
 
     @Override
     public SprayAndWaitUtilityRouter replicate() {
+        // Always override this method with return type of this class
         return new SprayAndWaitUtilityRouter(this);
     }
 
@@ -60,10 +62,15 @@ public class SprayAndWaitUtilityRouter extends SprayAndWaitRouter {
 
             int utility = 1;
 
+            // Increase the number of contacts with the other node
             if (utilities.containsKey(otherAddress)) {
+                // Already had some contact(s) with this node
+                // Get the current utility value for the node
                 utility += utilities.get(otherAddress);
             }
 
+            // Update the hash table with the new utility value
+            // for the concerned node
             utilities.put(otherAddress, utility);
         }
     }
@@ -91,6 +98,11 @@ public class SprayAndWaitUtilityRouter extends SprayAndWaitRouter {
 
     @Override
     protected List<Message> getMessagesWithCopiesLeft() {
+        // This is required to override the functionality of the superclass
+        // where a message is replicated just if nrofCopies > 1
+        // (Exercise 3.7, Chapter 3, #TheOMNBook) Returning null here would
+        // result in runtime exception since the SprayAndWait class uses the
+        // list returned. So, just return an empty list.
         return new ArrayList<Message>();
     }
 
