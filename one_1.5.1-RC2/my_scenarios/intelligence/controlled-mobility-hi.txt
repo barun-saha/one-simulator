@@ -1,0 +1,131 @@
+#
+# Controlled mobility with human intelligence apps
+#
+# intelligentApp.type: 1
+# intelligentApp.intlLevel: 4
+# Group.speed: 3
+# MovementModel.rngSeed: 11
+#
+# Total 132 scenarios
+
+## Scenario settings
+Scenario.name = hi-passive-%%intelligentApp.type%%-%%intelligentApp.intlLevel%%-%%Group.speed%%-%%MovementModel.rngSeed%%
+Scenario.simulateConnections = true
+Scenario.updateInterval = 1.0
+# 43200s == 12h
+# 14400s == 4hr
+Scenario.endTime = 86400
+Scenario.nrofHostGroups = 2
+
+
+## Interface-specific settings:
+# type : which interface class the interface belongs to
+# For different types, the sub-parameters are interface-specific
+# For SimpleBroadcastInterface, the parameters are:
+# transmitSpeed : transmit speed of the interface (bytes per second)
+# transmitRange : range of the interface (meters)
+
+# "Bluetooth" interface for all nodes
+btInterface.type = SimpleBroadcastInterface
+# Transmit speed of 2 Mbps = 250kBps
+btInterface.transmitSpeed = 250k
+btInterface.transmitRange = 50
+
+# Dummy interface -- Doesnt work
+#dInterface.type = SimpleBroadcastInterface
+#dInterface.transmitSpeed = 0k
+#dInterface.transmitRange = 50
+
+
+## Group-specific settings:
+# groupID : Group's identifier. Used as the prefix of host names
+# nrofHosts: number of hosts in the group
+# movementModel: movement model of the hosts (valid class name from movement package)
+# waitTime: minimum and maximum wait times (seconds) after reaching destination
+# speed: minimum and maximum speeds (m/s) when moving on a path
+# bufferSize: size of the message buffer (bytes)
+# router: router used to route messages (valid class name from routing package)
+# activeTimes: Time intervals when the nodes in the group are active (start1, end1, start2, end2, ...)
+# msgTtl : TTL (minutes) of the messages created by this host group, default=infinite
+
+## Group and movement model specific settings
+# pois: Points Of Interest indexes and probabilities (poiIndex1, poiProb1, poiIndex2, poiProb2, ... )
+#       for ShortestPathMapBasedMovement
+# okMaps : which map nodes are OK for the group (map file indexes), default=all
+#          for all MapBasedMovent models
+# routeFile: route's file path - for MapRouteMovement
+# routeType: route's type - for MapRouteMovement
+
+# Common settings for all groups
+Group.movementModel = ControlledRandomWaypoint
+Group.router = HumanIntelligenceRouter
+Group.bufferSize = 5M
+# All nodes have the bluetooth interface
+Group.nrofInterfaces = 1
+Group.interface1 = btInterface
+# Walking speeds: 0.5, 1.5
+Group.speed = [0.5,1.0; 1.0,2.0; 2.0,2.5]
+# Message TTL of 300 minutes (5 hours)
+Group.msgTtl = 300
+Group.nrofHosts = 20
+Group.groupID = n
+
+#neighbouringRWP.neighbourSearchProb = 0.7
+
+# PingApplication
+Group1.application1 = intelligentApp
+#Group1.application2 = intelligentApp
+#Group1.application3 = intelligentApp
+Group1.nrofApplications = 1
+intelligentApp.type = [HumanIntelligenceApplication2; ]
+intelligentApp.mobileNodesAddr = 0,20
+# Only levels 1-4 are implemented; include 5 to make prime # of args
+intelligentApp.intlLevel = [1; 2; 3; 4;]
+intelligentApp.kFactor = 3
+
+Group2.movementModel = RandomWaypoint
+Group2.nrofHosts = 45
+Group2.groupID = x
+Group2.speed = 0, 0
+Group2.router = PassiveRouter
+Group2.bufferSize = 0M
+
+hiRouter.staticID = x
+
+## Movement model settings
+# seed for movement models' pseudo random number generator (default = 0)
+MovementModel.rngSeed = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11]
+# World's size for Movement Models without implicit size (width, height; meters)
+MovementModel.worldSize = 5000, 5000
+# How long time to move hosts in the world before real simulation
+
+
+## Message creation parameters
+# How many event generators
+Events.nrof = 0
+# Class of the first event generator
+#Events1.class = MessageEventGenerator
+# (following settings are specific for the MessageEventGenerator class)
+# Creation interval in seconds (one new message every 25 to 35 seconds)
+#Events1.interval = 25,35
+# Message sizes (500kB - 1MB)
+#Events1.size = 500k,1M
+# range of message source/destination addresses
+#Events1.hosts = 0,4
+# Message ID prefix
+#Events1.prefix = M
+
+
+## Reports - all report names have to be valid report classes
+# how many reports to load
+Report.nrofReports = 1
+Report.reportDir = my_reports/controlled-mobility/passive/hi
+# Report classes to load
+#Report.report1 = MessageStatsReport
+Report.report1 = ContactLocationsReportSingleLine
+#Report.report3 = MessageReport
+
+## Optimization settings -- these affect the speed of the simulation
+## see World class for details.
+Optimization.cellSizeMult = 5
+Optimization.randomizeUpdateOrder = true
