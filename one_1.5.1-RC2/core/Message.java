@@ -1,6 +1,6 @@
-/* 
+/*
  * Copyright 2010 Aalto University, ComNet
- * Released under GPLv3. See LICENSE.txt for details. 
+ * Released under GPLv3. See LICENSE.txt for details.
  */
 package core;
 
@@ -427,6 +427,19 @@ public class Message implements Comparable<Message> {
             if (this.properties.containsKey(key)) {
                 this.properties.remove(key);
             }
+        }
+    }
+
+    /**
+     * Initial TTL set for the message; required by SeerRouter
+     *
+     * @return Initial TTL of the message
+     */
+    public int getInitialTtl() {
+        if (this.initTtl == INFINITE_TTL) {
+            return Integer.MAX_VALUE;
+        } else {
+            return (int) this.initTtl;
         }
     }
 }

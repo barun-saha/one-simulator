@@ -1,0 +1,103 @@
+# Simulate a scenario based on the Infocom'05 connection traces. The trace files
+# are not distributed with this code; you must generate on your own.
+
+## Scenario settings
+Scenario.name = ttl_%%Group.router%%_traffic-interval-%%Events2.interval%%_ttl-%%Group.msgTtl%%_buffer-%%Group.bufferSize%%
+Scenario.simulateConnections = false
+Scenario.updateInterval = 20
+# 14400s == 4hr
+# Duration 71 hours
+Scenario.endTime = 255600
+Scenario.nrofHostGroups = 2
+
+
+## Interface-specific settings:
+# type : which interface class the interface belongs to
+# For different types, the sub-parameters are interface-specific
+# For SimpleBroadcastInterface, the parameters are:
+# transmitSpeed : transmit speed of the interface (bytes per second)
+# transmitRange : range of the interface (meters)
+
+# "Bluetooth" interface for all nodes
+btInterface.type = SimpleBroadcastInterface
+# Transmit speed of 2 Mbps = 250kBps
+btInterface.transmitSpeed = 250k
+btInterface.transmitRange = 10
+
+## Group-specific settings:
+# groupID : Group's identifier. Used as the prefix of host names
+# nrofHosts: number of hosts in the group
+# movementModel: movement model of the hosts (valid class name from movement package)
+# waitTime: minimum and maximum wait times (seconds) after reaching destination
+# speed: minimum and maximum speeds (m/s) when moving on a path
+# bufferSize: size of the message buffer (bytes)
+# router: router used to route messages (valid class name from routing package)
+# activeTimes: Time intervals when the nodes in the group are active (start1, end1, start2, end2, ...)
+# msgTtl : TTL (minutes) of the messages created by this host group, default=infinite
+
+# Common settings for all groups
+Group.movementModel = StationaryMovement
+Group.router = SeerRouter
+
+# All nodes have the bluetooth interface
+Group.nrofInterfaces = 1
+Group.interface1 = btInterface
+Group.groupID = n
+
+# Message TTL of 720 minutes (8, 12, 16, 20, 24 hours)
+Group.msgTtl = [480; 720; 960; 1200; 1440;]
+Group.bufferSize = 150M
+
+# Dummy
+Group1.nrofHosts = 1
+Group1.nodeLocation = 4000,4000
+Group1.movementModel = StationaryMovement
+Group1.router = PassiveRouter
+
+Group2.nrofHosts = 41
+Group2.nodeLocation = 10,10
+Group2.movementModel = StationaryMovement
+
+## Movement model settings
+# seed for movement models' pseudo random number generator (default = 0)
+MovementModel.rngSeed = 1
+# World's size for Movement Models without implicit size (width, height; meters)
+MovementModel.worldSize = 5000, 5000
+# How long time to move hosts in the world before real simulation
+
+
+## Message creation parameters
+# How many event generators
+Events.nrof = 2
+
+## Trace information
+Events1.class = ExternalEventsQueue
+Events1.filePath = my_scenarios/__traces__/infocom05-41n-71hr.tr
+
+# Class of the first event generator
+Events2.class = MessageEventGenerator
+# (following settings are specific for the MessageEventGenerator class)
+# Low and high traffic intensities
+Events2.interval = [600,1200; 25,35;]
+# Message sizes (500kB - 1MB)
+Events2.size = 500k,1M
+# range of message source/destination addresses
+Events2.hosts = 1, 42
+# Message ID prefix
+Events2.prefix = M
+#Events2.time = 3600,33000
+
+
+## Reports - all report names have to be valid report classes
+# how many reports to load
+Report.nrofReports = 1
+Report.reportDir = my_reports/seer/ttl_uniform/infocom05/
+# Report classes to load
+#Report.report1 = ProphetStatsReport
+Report.report1 = MessageStatsReport
+
+
+## Optimization settings -- these affect the speed of the simulation
+## see World class for details.
+Optimization.cellSizeMult = 5
+Optimization.randomizeUpdateOrder = true
