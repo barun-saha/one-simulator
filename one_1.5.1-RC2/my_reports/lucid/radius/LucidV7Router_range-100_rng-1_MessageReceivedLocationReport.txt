@@ -1,0 +1,6 @@
+report_locality: 100.0
+FC_A: -1.0
+FC_R: -1.0
+created: 4055
+rcvd_inside: 9407
+rcvd_outside: 3230
